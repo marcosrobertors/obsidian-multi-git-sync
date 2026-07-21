@@ -1,6 +1,6 @@
 {
   "name": "obsidian-multi-git-sync",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Obsidian plugin for syncing multiple vault scopes to Git remotes.",
   "main": "main.js",
   "scripts": {
