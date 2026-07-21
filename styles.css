@@ -1,0 +1,41 @@
+/* Multi Git Sync */
+
+.multi-git-sync-ignore-tree-container {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  margin: 12px 0;
+  padding: 12px;
+}
+
+.multi-git-sync-tree-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.multi-git-sync-tree {
+  max-height: 360px;
+  overflow: auto;
+  border-top: 1px solid var(--background-modifier-border);
+  padding-top: 8px;
+}
+
+.multi-git-sync-tree-row {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.multi-git-sync-tree-label {
+  user-select: none;
+}
+
+.multi-git-sync-warning {
+  background: var(--background-modifier-error);
+  border-radius: 8px;
+  color: var(--text-on-accent);
+  margin: 12px 0;
+  padding: 10px;
+}
