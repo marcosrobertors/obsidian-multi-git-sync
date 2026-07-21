@@ -1,7 +1,7 @@
 {
   "id": "multi-git-sync",
   "name": "Multi Git Sync",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "minAppVersion": "0.15.0",
   "description": "Sync Obsidian vault scopes to multiple Git remotes with managed gitignore rules.",
   "author": "Marcos",

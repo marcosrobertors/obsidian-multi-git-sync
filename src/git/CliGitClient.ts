@@ -104,6 +104,15 @@ export class CliGitClient {
     }
   }
 
+  async hasHead(root: string): Promise<boolean> {
+    try {
+      await this.run(root, ["rev-parse", "--verify", "HEAD"]);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async ensureRepository(root: string, remoteUrl: string, branch: string): Promise<void> {
     mkdirSync(resolve(this.vaultRoot, root || "."), { recursive: true });
     try {
@@ -134,6 +143,10 @@ export class CliGitClient {
       throw new GitError(`Remote branch "${branch}" does not exist yet.`);
     }
     await this.run(root, ["fetch", "origin", branch]);
+    if (!(await this.hasHead(root))) {
+      await this.checkoutRemoteBranch(root, branch);
+      return [];
+    }
     if ((await this.getAheadBehind(root, branch)).behind === 0) return [];
     if (await this.hasChanges(root, true)) {
       throw new GitError("Cannot pull: local commitable changes exist. Commit, stash, or sync first.");
@@ -151,11 +164,17 @@ export class CliGitClient {
   async sync(root: string, remoteUrl: string, branch: string, commitMessage: string, autoCommit: boolean): Promise<string[]> {
     await this.ensureRepository(root, remoteUrl, branch);
 
+    const remoteExists = await this.remoteBranchExists(root, branch);
+    if (remoteExists && !(await this.hasHead(root))) {
+      await this.run(root, ["fetch", "origin", branch]);
+      await this.checkoutRemoteBranch(root, branch);
+      return [];
+    }
+
     if (autoCommit && await this.hasChanges(root, true)) {
       await this.stageAndCommit(root, commitMessage);
     }
 
-    const remoteExists = await this.remoteBranchExists(root, branch);
     if (remoteExists) {
       await this.run(root, ["fetch", "origin", branch]);
       const aheadBehind = await this.getAheadBehind(root, branch);
@@ -197,6 +216,11 @@ export class CliGitClient {
     if (await this.hasStagedChanges(root)) {
       await this.run(root, ["commit", "-m", commitMessage]);
     }
+  }
+
+  private async checkoutRemoteBranch(root: string, branch: string): Promise<void> {
+    await this.run(root, ["checkout", "-B", branch, `origin/${branch}`]);
+    await this.run(root, ["branch", "--set-upstream-to", `origin/${branch}`, branch]);
   }
 
   private async remoteBranchExists(root: string, branch: string): Promise<boolean> {
