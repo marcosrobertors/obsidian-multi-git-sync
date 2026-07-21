@@ -1,6 +1,6 @@
 import { ExecFileException, execFile } from "child_process";
-import { join, resolve } from "path";
-import { existsSync, mkdirSync, statSync } from "fs";
+import { dirname, join, resolve } from "path";
+import { existsSync, mkdirSync, renameSync, statSync } from "fs";
 
 export interface GitResult {
   stdout: string;
@@ -144,6 +144,7 @@ export class CliGitClient {
     }
     await this.run(root, ["fetch", "origin", branch]);
     if (!(await this.hasHead(root))) {
+      await this.backupUntrackedFiles(root);
       await this.checkoutRemoteBranch(root, branch);
       return [];
     }
@@ -167,6 +168,7 @@ export class CliGitClient {
     const remoteExists = await this.remoteBranchExists(root, branch);
     if (remoteExists && !(await this.hasHead(root))) {
       await this.run(root, ["fetch", "origin", branch]);
+      await this.backupUntrackedFiles(root);
       await this.checkoutRemoteBranch(root, branch);
       return [];
     }
@@ -221,6 +223,27 @@ export class CliGitClient {
   private async checkoutRemoteBranch(root: string, branch: string): Promise<void> {
     await this.run(root, ["checkout", "-B", branch, `origin/${branch}`]);
     await this.run(root, ["branch", "--set-upstream-to", `origin/${branch}`, branch]);
+  }
+
+  private async backupUntrackedFiles(root: string): Promise<void> {
+    const result = await this.run(root, ["ls-files", "--others", "--exclude-standard", "-z"]);
+    const files = result.stdout.split("\0").filter(Boolean)
+      .filter((file) => !file.startsWith(".git/") && !file.startsWith(".multi-git-sync-backups/"));
+    if (files.length === 0) return;
+
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const repoRoot = resolve(this.vaultRoot, root || ".");
+    const backupRoot = join(repoRoot, ".multi-git-sync-backups", stamp);
+    mkdirSync(backupRoot, { recursive: true });
+    this.logger?.result(`Backing up ${files.length} untracked local file(s) before first pull to .multi-git-sync-backups/${stamp}`, "");
+
+    for (const file of files) {
+      const source = join(repoRoot, file);
+      if (!existsSync(source)) continue;
+      const destination = join(backupRoot, file);
+      mkdirSync(dirname(destination), { recursive: true });
+      renameSync(source, destination);
+    }
   }
 
   private async remoteBranchExists(root: string, branch: string): Promise<boolean> {

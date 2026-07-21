@@ -149,7 +149,7 @@ export class MultiGitSyncSettingTab extends PluginSettingTab {
         await this.addIgnoreRules(target, ignoreTextArea, ["desktop.ini", "Thumbs.db", ".DS_Store"]);
       }))
       .addButton((button) => button.setButtonText("Obsidian volatile").onClick(async () => {
-        await this.addIgnoreRules(target, ignoreTextArea, [".obsidian/workspace.json", ".obsidian/workspace-mobile.json", ".obsidian/cache/", ".trash/", ".claudian/", ".tmp.driveupload/"]);
+        await this.addIgnoreRules(target, ignoreTextArea, [".obsidian/workspace.json", ".obsidian/workspace-mobile.json", ".obsidian/cache/", ".trash/", ".claudian/", ".tmp.driveupload/", ".multi-git-sync-backups/"]);
       }))
       .addButton((button) => button.setButtonText("Large archives").onClick(async () => {
         await this.addIgnoreRules(target, ignoreTextArea, ["*.zip", "*.7z", "*.rar", "*.tar", "*.gz"]);
@@ -213,7 +213,7 @@ function createDefaultTarget(): SyncTarget {
     syncOnStartupIfBehind: false,
     autoCommit: true,
     commitMessageTemplate: "Sync: {{date}}",
-    managedIgnoreRules: [],
+    managedIgnoreRules: [".multi-git-sync-backups/"],
   };
 }
 

@@ -91,7 +91,7 @@ Use this when the remote already has content and the local folder should receive
 2. Enter the same root folder, remote URL, and branch.
 3. Click `Save + Pull`.
 
-If the local folder already has files that Git would overwrite, Git will block the pull. The plugin does not automatically delete, overwrite, or stash user files.
+If the local repository has no first commit yet and local untracked files would block checkout, the plugin moves those local files to `.multi-git-sync-backups/<timestamp>/` before checking out the remote branch. It does not delete them.
 
 ## Normal sync
 

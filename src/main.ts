@@ -478,7 +478,7 @@ class SetupTargetModal extends Modal {
       syncOnStartupIfBehind: false,
       autoCommit: true,
       commitMessageTemplate: "Sync: {{date}}",
-      managedIgnoreRules: ["desktop.ini", "Thumbs.db", ".DS_Store"],
+      managedIgnoreRules: ["desktop.ini", "Thumbs.db", ".DS_Store", ".multi-git-sync-backups/"],
     };
   }
 }
