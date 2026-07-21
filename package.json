@@ -26,10 +26,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marcosrobertors/multi-git-sync.git"
+    "url": "git+https://github.com/marcosrobertors/obsidian-multi-git-sync.git"
   },
   "bugs": {
-    "url": "https://github.com/marcosrobertors/multi-git-sync/issues"
+    "url": "https://github.com/marcosrobertors/obsidian-multi-git-sync/issues"
   },
-  "homepage": "https://github.com/marcosrobertors/multi-git-sync#readme"
+  "homepage": "https://github.com/marcosrobertors/obsidian-multi-git-sync#readme"
 }

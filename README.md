@@ -42,7 +42,11 @@ git --version
 1. Install the Obsidian community plugin **BRAT**.
 2. Open the command palette.
 3. Run `BRAT: Add a beta plugin for testing`.
-4. Paste this repository URL.
+4. Paste this repository URL:
+
+   ```txt
+   https://github.com/marcosrobertors/obsidian-multi-git-sync
+   ```
 5. Enable `Multi Git Sync` in Obsidian community plugins.
 
 If BRAT asks for a version, use the latest release.
