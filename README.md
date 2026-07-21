@@ -28,14 +28,16 @@ It is designed for vaults where one repository is not enough, for example:
 ## Requirements
 
 - Obsidian desktop.
-- Git installed and available in your system PATH, or configured in the plugin settings.
+- Git installed and available in your system PATH, installed in a common Windows Git location, or configured in the plugin settings.
 - A Git remote you control.
 
-Check Git:
+Check Git from a terminal:
 
 ```bash
 git --version
 ```
+
+Inside Obsidian, use `Multi Git Sync: Test Git installation` or the `Test Git` button in settings. If Git is not on PATH, set `Git path` to a folder such as `C:/Program Files/Git/cmd` or to `C:/Program Files/Git/bin/git.exe`.
 
 ## Install with BRAT
 

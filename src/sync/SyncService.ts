@@ -84,6 +84,11 @@ export class SyncService {
     return await git.status(target.root);
   }
 
+  async testGit(): Promise<string> {
+    const git = new CliGitClient(this.settings.gitPath, this.vaultRoot);
+    return await git.version();
+  }
+
   async diagnoseTarget(target: SyncTarget): Promise<string> {
     const git = new CliGitClient(this.settings.gitPath, this.vaultRoot);
     const lines = [

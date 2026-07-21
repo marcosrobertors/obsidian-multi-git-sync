@@ -15,14 +15,17 @@ export class MultiGitSyncSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Git path")
-      .setDesc("Use 'git', a git executable path, or a folder containing git.exe.")
+      .setDesc("Use 'git', a git executable path, or a folder containing git.exe. On Windows, the plugin also tries common Git install paths.")
       .addText((text) => text
         .setPlaceholder("git")
         .setValue(this.plugin.settings.gitPath)
         .onChange(async (value) => {
           this.plugin.settings.gitPath = value.trim() || "git";
           await this.plugin.saveSettings();
-        }));
+        }))
+      .addButton((button) => button
+        .setButtonText("Test Git")
+        .onClick(() => void this.plugin.testGitInstallation()));
 
     new Setting(containerEl)
       .setName("Notice level")

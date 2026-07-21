@@ -66,6 +66,11 @@ export default class MultiGitSyncPlugin extends Plugin {
       name: "Clear old logs",
       callback: () => this.clearOldLogs(),
     });
+    this.addCommand({
+      id: "test-git",
+      name: "Test Git installation",
+      callback: () => this.testGitInstallation(),
+    });
 
     this.app.workspace.onLayoutReady(() => {
       void this.getSyncService().syncOnStartupIfBehind();
@@ -183,6 +188,15 @@ export default class MultiGitSyncPlugin extends Plugin {
   async applyGitignore(target: SyncTarget): Promise<void> {
     new GitignoreManager(this.getVaultRoot()).applyManagedRules(target.root, target.managedIgnoreRules);
     new Notice(`Applied .gitignore for ${target.name}.`);
+  }
+
+  async testGitInstallation(): Promise<void> {
+    try {
+      const version = await this.getSyncService().testGit();
+      new Notice(`Git OK: ${version}`);
+    } catch {
+      new Notice('Git not found. Install Git or set "Git path" in Multi Git Sync settings.');
+    }
   }
 
   private async syncFromRibbon(): Promise<void> {

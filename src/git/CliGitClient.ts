@@ -1,6 +1,6 @@
 import { ExecFileException, execFile } from "child_process";
 import { join, resolve } from "path";
-import { mkdirSync, statSync } from "fs";
+import { existsSync, mkdirSync, statSync } from "fs";
 
 export interface GitResult {
   stdout: string;
@@ -45,6 +45,11 @@ export class CliGitClient {
     if (!(await this.remoteBranchExists(root, branch))) return false;
     await this.run(root, ["fetch", "origin", branch]);
     return (await this.getAheadBehind(root, branch)).behind > 0;
+  }
+
+  async version(): Promise<string> {
+    const result = await this.run(".", ["--version"]);
+    return result.stdout.trim();
   }
 
   async status(root: string): Promise<string> {
@@ -204,7 +209,7 @@ export class CliGitClient {
   }
 
   private getGitExecutable(): string {
-    if (!this.gitPath || this.gitPath === "git") return "git";
+    if (!this.gitPath || this.gitPath === "git") return detectGitExecutable();
     try {
       if (statSync(this.gitPath).isDirectory()) return join(this.gitPath, process.platform === "win32" ? "git.exe" : "git");
     } catch {
@@ -215,6 +220,17 @@ export class CliGitClient {
 }
 
 function formatGitError(error: ExecFileException, result: GitResult): string {
+  if (error.code === "ENOENT") {
+    return [
+      "Git executable not found.",
+      "",
+      "Install Git and restart Obsidian, or set Git path in Multi Git Sync settings.",
+      "",
+      "Windows examples:",
+      "C:/Program Files/Git/cmd",
+      "C:/Program Files/Git/bin/git.exe",
+    ].join("\n");
+  }
   const stderr = tail(result.stderr.trim(), 30);
   const stdout = tail(result.stdout.trim(), 10);
   return [
@@ -223,6 +239,17 @@ function formatGitError(error: ExecFileException, result: GitResult): string {
     stderr ? `stderr tail:\n${stderr}` : "",
     stdout ? `stdout tail:\n${stdout}` : "",
   ].filter(Boolean).join("\n");
+}
+
+function detectGitExecutable(): string {
+  if (process.platform !== "win32") return "git";
+  const candidates = [
+    join(process.env.ProgramFiles || "C:/Program Files", "Git", "cmd", "git.exe"),
+    join(process.env.ProgramFiles || "C:/Program Files", "Git", "bin", "git.exe"),
+    join(process.env["ProgramFiles(x86)"] || "C:/Program Files (x86)", "Git", "cmd", "git.exe"),
+    join(process.env.LocalAppData || "", "Programs", "Git", "cmd", "git.exe"),
+  ].filter(Boolean);
+  return candidates.find((candidate) => existsSync(candidate)) || "git";
 }
 
 function tail(text: string, maxLines: number): string {
